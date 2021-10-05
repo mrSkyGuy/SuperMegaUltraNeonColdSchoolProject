@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 using namespace std;
 
 
@@ -8,6 +7,17 @@ const string strNums[10] = {
       "0", "1", "2", "3", "4", 
       "5", "6", "7", "8", "9"
   };
+
+
+string reverse(string s) {
+    string res = "";
+    int len = s.length();
+    for (int i = len - 1; i >= 0; i--) {
+        res += s[i];
+    }
+    
+    return res;
+}
 
 
 string to_str(int n) {
@@ -20,7 +30,7 @@ string to_str(int n) {
     } while (x);
 
     result = n >= 0 ? result : result + "-"; 
-    reverse(result.begin(), result.end());
+    result = reverse(result);
 
     return result;
 }
