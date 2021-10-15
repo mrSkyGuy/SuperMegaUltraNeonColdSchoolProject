@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
@@ -22,15 +23,15 @@ string capitalize(string str) {
 }
 
 
-vector <string> split(string str) {
-    /* split("Имя Фамилия Отчество") -> {"Имя", "Фамилия", "Отчество"} */
+vector <string> split(string str, char sep) {
+    /* split("Имя Фамилия Отчество", ' ') -> {"Имя", "Фамилия", "Отчество"} */
 
 
     vector <string> result;
 
     int k = 0;
     for (int i = 0; i < str.size(); i++) {
-        if (isspace(str[i])) {
+        if (str[i] == sep) {
             string s = str.substr(k, i - k);
             if (!s.empty()) {
                 result.push_back(s);
@@ -49,15 +50,6 @@ vector <string> split(string str) {
 }
 
 
-vector <string> sorted(vector <string> lst) {
-    vector <string> result;
-
-
-
-    return result;
-}
-
-
 int main() {
     vector <string> list;
     string st;
@@ -70,31 +62,25 @@ int main() {
         }
     }
 
-    vector <string> okList;
+    vector <vector<string>> okList;
     for (int i = 0; i < list.size(); i++) {
-        bool isCapitalize = true;  // Проверка на соблюдение регистра
-        bool isTh3Words = true;  // Проверка на то, чтобы в ФИО было 3 слова
-        vector <string> fio = split(list[i]);
-        if (fio.size() != 3) {
-            isTh3Words = false;
-            // cout << fio[1] << endl;
-        }
+        vector <string> fio = split(list[i], ' ');
+
         for (string &name: fio) {
-            if (capitalize(name) != name) {
-                isCapitalize = false;
-                // cout << fio[1] << endl;
-            }
+            name = capitalize(name);
         }
-        if (isTh3Words && isCapitalize) {
-            okList.push_back(list[i]);
-        }
+        okList.push_back(fio);
     }
 
-    for (string &fio: okList) {
-        cout << fio << endl;
-    }
+    sort(okList.begin(), okList.end());  // сортировка
 
-    // Осталось реализовать ф-ию sorted() и задача будет решена
+    // Вывод фио
+    for (vector <string> &fio: okList) {
+        for (string &name: fio) {
+            cout << name << " ";
+        }
+        cout << endl;
+    }
 
     return 0;
 }
