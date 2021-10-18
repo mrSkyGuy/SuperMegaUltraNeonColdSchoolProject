@@ -3,20 +3,25 @@
 #include <string>
 
 using namespace std;
-
+//    fin.eof() // Конец файла (bool)
 int main() {
-    ifstream fin;  // Считать данные из файла
-    ofstream fout;  // Перезаписать данные из файла
+    ifstream fin;
 
     string s;
-    int a;
-
-    fin.open("file_name.txt");
-    fout.open("file_name2.txt");
-
-    fin >> a;  // Считать до пробельного символа, чтобы до Enter, нужно использовать следующую конструкцию:
+    fin.open("k7.txt");
     getline(fin, s);
-    fout << a;
 
-    fin.close();  // Необязательно
+    int k = 0, maxk = 0;
+    for (int i = 0; i < s.size(); i++) {
+        if (s[i] == 'C') {
+            k++;
+            if (k > maxk) maxk = k;
+        }
+        else {
+            k = 0;
+        }
+    }
+    cout << maxk;
+
+    fin.close();
 }
