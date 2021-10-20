@@ -19,7 +19,6 @@ int main() {
                 ((symbs[i] == 'A' || symbs[i] == 'B' || symbs[i] == 'F') && symbs[i] != symbs[i - 1])
             ) {
             count++;
-            i += 2;
         }
         i++;
     }
