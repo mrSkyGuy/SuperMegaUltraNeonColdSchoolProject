@@ -8,28 +8,22 @@ int main() {
     ifstream fin;
     string symbs;
     int count = 0;
-    int maxc = 0;
-    // char temp;
 
     fin.open("input.txt");
     getline(fin, symbs);
-    int k = 0;
-    for (char &symb: symbs) {
-        if (symb == 'A' || symb == 'C' || symb == 'D') count++;
-        else {
-            // cout << symb << endl;
-            if (maxc < count) maxc = count;
-            count = 0;
+    
+    for (int i = 2; i < symbs.size();) {
+        if (
+                (symbs[i - 2] == 'A' || symbs[i - 2] == 'C' || symbs[i - 2] == 'E') &&
+                ((symbs[i - 1] == 'A' || symbs[i - 1] == 'D' || symbs[i - 1] == 'F') && symbs[i - 1] != symbs[i - 2]) &&
+                ((symbs[i] == 'A' || symbs[i] == 'B' || symbs[i] == 'F') && symbs[i] != symbs[i - 1])
+            ) {
+            count++;
+            i += 2;
         }
-        if (k == symbs.size() - 1) {
-            // cout << symb << endl;
-            if (maxc < count) maxc = count;
-            count = 0;
-        }
-        
-        k++;
+        i++;
     }
-    cout << maxc;
+    cout << count;
 
     return 0;
 }
