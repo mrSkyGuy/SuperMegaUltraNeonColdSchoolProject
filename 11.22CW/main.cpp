@@ -3,7 +3,11 @@
 using namespace std;
 
 int main() {
-    cout << "123";
+    int a, b, c, n;
+    cin >> a >> b >> c;
+
+    n = (c - a) / b;
+    cout << n;
 
     return 0;
 }
