@@ -9,7 +9,6 @@ string getRandName() {
     const string vowels = "eyuioa";
     string name = "";
 
-    srand(time(0));
     int slogCount = rand() % 3 + 2;
 
     for (int i = 0; i < slogCount; i++) {
@@ -26,19 +25,17 @@ string getRandName() {
 
 
 class Unit {
-    private:
-        string id;
-    
     public:
+        string id;
         int hp = 100;
         Unit(string Id) {
             this->id = Id;
-            this->hp = hp;
+            
         }
 
         Unit() {
             this->id = getRandName();
-            this->hp = hp;
+            
         }
 
         void print_info() {
@@ -47,16 +44,22 @@ class Unit {
 };
 
 
-class Player: Unit {
-    private:
+class Player: public Unit {
+    public:
         int lvl = 1;
         int xp = 0;
     
-    public:
+    
         int damage = 10;
 
-        void getDamage(Player enemy) {
-            this->hp -= enemy.damage;
+        // Player() {
+        //     // this->damage = damage;
+        //     this->lvl = lvl;
+        //     this->xp = xp;
+        // }
+
+        void getDamage(Player &enemy) {
+            hp -= enemy.damage;
         }
 
         void lvlUp() {
@@ -66,12 +69,30 @@ class Player: Unit {
         void getXp(int XP) {
             this->xp += XP;
         }
+
+        void doDamage(Player enemy) {
+            enemy.getDamage(*this);
+
+            cout << "Player " << enemy.id << " got damage from " << this->id 
+                 << " " << this->damage << " points" << endl;
+        }
 };
 
 
 int main() {
-    Unit abobus = Unit();
-    abobus.print_info();
+    srand(time(0));
+
+    Player mainHero = Player();
+    Player mainEnemy = Player();
+    cout << mainEnemy.damage;
+    while (mainHero.hp > 0 && mainEnemy.hp > 0) {
+        cout << mainHero.hp << endl;
+        
+        mainHero.doDamage(mainEnemy);
+        mainEnemy.doDamage(mainHero);
+        cout << mainHero.hp << endl;
+        break;
+    }
 
     return 0;
 }
