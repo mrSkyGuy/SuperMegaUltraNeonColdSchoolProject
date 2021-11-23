@@ -10,17 +10,15 @@ string getRandName() {
     string name = "";
 
     srand(time(0));
-    int slogCount = rand() % 5 + 2;
+    int slogCount = rand() % 3 + 2;
 
     for (int i = 0; i < slogCount; i++) {
         int index;
-        if (i % 2) {
-            index = rand() % 19;
-            name += consontans[index];
-        } else {
-            index = rand() % 5;
-            name += vowels[index];
-        }
+        index = rand() % 19;
+        name += consontans[index];
+
+        index = rand() % 5;
+        name += vowels[index];
     }
 
     return name;
@@ -30,9 +28,9 @@ string getRandName() {
 class Unit {
     private:
         string id;
-        int hp = 100;
     
     public:
+        int hp = 100;
         Unit(string Id) {
             this->id = Id;
             this->hp = hp;
@@ -45,6 +43,28 @@ class Unit {
 
         void print_info() {
             cout << "ID: " << this->id << endl << "HP" << this->hp << endl;
+        }
+};
+
+
+class Player: Unit {
+    private:
+        int lvl = 1;
+        int xp = 0;
+    
+    public:
+        int damage = 10;
+
+        void getDamage(Player enemy) {
+            this->hp -= enemy.damage;
+        }
+
+        void lvlUp() {
+            this->lvl++;
+        }
+
+        void getXp(int XP) {
+            this->xp += XP;
         }
 };
 
