@@ -1,2 +1,2 @@
 # My class and home works repo <3
-### Folder name -> <dd.mm> + HW(homework) / CW(classwork) / IW (independent work)
+### Folder name -> <mm.dd> + HW(homework) / CW(classwork) / IW (independent work)
