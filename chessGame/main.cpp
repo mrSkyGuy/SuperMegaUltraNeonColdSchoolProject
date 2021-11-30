@@ -2,6 +2,7 @@
 using namespace std;
 
 
+// поле в котором буду храниться информация о расположении фигур на доске
 string field[8][8] = {
     {"12", "  ", "  ", "  ", "  ", "  ", "  ", "  "},
     {"  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "},
@@ -16,7 +17,7 @@ string field[8][8] = {
 const int white = 1, black = 0;
 
 
-void printTable() {
+void printTable() {  // вывод "актуальной доски"
     cout << "  +----+----+----+----+----+----+----+----+" << endl;
     for (int i = 7; i >= 0; i--) {
         cout << i << " |";
@@ -31,11 +32,11 @@ void printTable() {
 }
 
 
-class Figure {
+class Figure {  // класс родитель всех фигур
     public:
-        string name;
-        int color;
-        int row, column;
+        string name;  // имя фигуры на английском языке
+        int color;  // цвет цифрой, где 1 - белый, а 0 - черный
+        int row, column;  // расположение на доске
 
     Figure(string name, int color, int row, int column) {
         this->name = name;
@@ -47,18 +48,19 @@ class Figure {
 };
 
 
-class Pawn: Figure {
+class Pawn: Figure {  // собственно, сама фигура. В нашем случае, пешка
     public:
-        void move(int x, int y) {
-            if (this->canMove(x, y)) {
+        void move(int x, int y) {  // метод позволяющий двигать фигурой по доске, если это возможно. ->
+            if (this->canMove(x, y)) {  // Это проверяется в методе canMove
                 
             }
         }
 
     private:
-        bool isFirstStep = true;
+        bool isFirstStep = true;  // у пешок, как мы знаем, есть возможность сделать ход на 2 ячейки вперед, 
+        // но только тогда, когда мы двигаем этой пешкой впервые. Именно для этого и нужно это поле
 
-        bool canMove(int x, int y) {
+        bool canMove(int x, int y) {  // Метод проверяет на возможность хода
             bool isCellEmpty = bool(field[x][y].empty());
             if (this->row == x && (y - this->column == 1 || (y - this->column == 2 && isFirstStep))) {
 
@@ -68,7 +70,7 @@ class Pawn: Figure {
 
 
 int main() {
-    printTable();
+    printTable();  // вывод доски
 
     return 0;
 }
