@@ -5,19 +5,6 @@
 
 using namespace std;
 
-
-bool check(string country, string city) {
-    for (char i: country) {
-        for (char j: city) {
-            if (i == j) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-
 int main() {
     map <string, string> cities;
     vector <string> cities_keys;
@@ -39,22 +26,30 @@ int main() {
                 city = st.substr(i + 1, st.size());
             }
         }
-
-        if (check(country, city)) {
-            cities[city] = country;
-            cities_keys.push_back(city);
-        }
+        cities[city] = country;
+        cities_keys.push_back(city);
+        // countries[city] = country;
     }
 
-    vector <string> res;
+    sort(cities_keys.begin(), cities_keys.end());
+
+    // bubble sort
+    // int N = cities_keys.size();
+    // for (int i = 0, b; i < N - 1; i++) {
+    //     for (int j = N - 1; j > i; j--)
+    //     {
+    //         if (cities_keys[j] < cities_keys[j - 1]) {
+    //             string b = cities_keys[j - 1];
+    //             cities_keys[j - 1] = cities_keys[j];
+    //             cities_keys[j] = b;
+    //         }
+    //     }
+    // }
+
     for (auto city: cities_keys) {
-        res.push_back(cities[city]);
+        cout << city << " (" << cities[city] << ")" << endl;
     }
 
-    sort(res.begin(), res.end());
-    for (auto country: res) {
-        cout << country << endl;
-    }
 
     return 0;
 }
