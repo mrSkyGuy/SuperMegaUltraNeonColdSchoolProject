@@ -1,55 +1,31 @@
 #include <iostream>
 #include <map>
-#include <string>
-#include <vector>
+
 using namespace std;
 
-
-vector <string> split(string str, char sep) {
-    vector <string> result;
-
-    int k = 0;
-    for (int i = 0; i < str.size(); i++) {
-        if (str[i] == sep) {
-            string s = str.substr(k, i - k);
-            if (!s.empty()) {
-                result.push_back(s);
-            }
-            k = i + 1;
-        } else if (i == str.size() - 1) {
-            string s = str.substr(k, i - k + 1);
-            if (!s.empty()) {
-                result.push_back(s);
-            }
-        }
-        
-    }
-
-    return result;
-}
-
-
 int main() {
-    map <string, string> dick;
-
-    while (true) {
-        string countryCity;
-        getline(cin, countryCity);
-        if (countryCity == "") {
-            break;
+    map<string, string> cities;
+    map<string, string> countries;
+    string st;
+    string country, city;
+    for (;;) {
+        getline(cin, st);
+        if (st.empty()) break;
+        for (int i = 0; i < st.size(); i++) {
+            if (st[i] == ' ') {
+                country = st.substr(0, i);
+                city = st.substr(i + 1, st.size());
+            }
+            cities[country] = city;
+            countries[city] = country;
         }
-
-        vector <string> VectorCountryCity = split(countryCity, ' ');
-        string country = VectorCountryCity[0];
-        string city = VectorCountryCity[1];
-
-        dick[country] = city;
-        dick[city] = country;
     }
+    getline(cin, st);
+    if (cities.find(st) != cities.end()) {
+        cout << cities[st];
 
-    string request;
-    cin >> request;
-    cout << dick[request];
-
+    } else {
+        cout << countries[st];
+    }
     return 0;
 }
