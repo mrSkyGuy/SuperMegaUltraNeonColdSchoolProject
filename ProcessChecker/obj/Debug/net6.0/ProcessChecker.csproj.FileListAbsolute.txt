@@ -1,0 +1,15 @@
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ProcessChecker.exe
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ProcessChecker.deps.json
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ProcessChecker.runtimeconfig.json
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ProcessChecker.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ref\ProcessChecker.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\bin\Debug\net6.0\ProcessChecker.pdb
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.csproj.AssemblyReference.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.AssemblyInfoInputs.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.AssemblyInfo.cs
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.csproj.CoreCompileInputs.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ref\ProcessChecker.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.pdb
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\ProcessChecker\obj\Debug\net6.0\ProcessChecker.genruntimeconfig.cache
