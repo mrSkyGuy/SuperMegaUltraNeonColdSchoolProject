@@ -67,7 +67,7 @@ class Program {
         Console.ResetColor();
 
         string? reqId = Console.ReadLine();
-        Process.GetProcessById(int.Parse(reqId)).Kill();
+        Process.GetProcessById(int.Parse(reqId != null ? reqId : "")).Kill();
 
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine("   Выполено успешно");
@@ -97,7 +97,7 @@ class Program {
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine("[-] Результаты поиска:");
         foreach (var process in Process.GetProcesses()) {
-            if (process.ProcessName.Contains(req)) {
+            if (process.ProcessName.Contains(req != null ? req : "")) {
                 Console.WriteLine($"    {process.Id} -> {process.ProcessName}");
             }
         }
