@@ -6,7 +6,7 @@ using System.Linq;
 class Program {
     static void Main(string[] args) {
         bool updateConsole = true;
-        string command = null;  // Ну да, костыль
+        string? command = null;  // Ну да, костыль
         while (true) {
             if (command != null) {
                 string[] commandParts = command.Split(' ');
