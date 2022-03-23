@@ -1,38 +1,51 @@
 ﻿using System;
+using System.Linq;
  
 namespace Snowfall {
     class Program {
         static void Main(string[] args) {
             Console.Clear();
  
-            const int snowflakesCount = 50;  // Количество снежинок
-            Snowflake[] snowflakes = new Snowflake[snowflakesCount];  // Все снежинки
-            Snowdrift snowdrift = new Snowdrift(snowflakesCount);  // Сугроб
+            const int snowflakesCount = 5,  // Количество снежинок
+                      consoleWidth = 100,
+                      consoleHeight = 40;
+            int snowflakesCountOnScreen = 0;
  
-            const int consoleWidth = 50;
-            const int consoleHeight = 50;
+            Snowflake[] snowflakes = new Snowflake[consoleHeight * consoleWidth];  // Все снежинки
+            Snowdrift snowdrift = new Snowdrift(consoleHeight * consoleWidth);  // Сугроб
  
             Console.SetWindowSize(consoleWidth, consoleHeight);
             Console.CursorVisible = false;
  
-            for (int i = 0; i < snowflakesCount; i++) snowflakes[i] = new Snowflake(
-                snowdrift, ww: consoleWidth, wh: consoleHeight
-            ); 
-
+ 
             while (true) {
+                if (snowflakesCountOnScreen + snowflakesCount < consoleHeight * consoleWidth / 20) {
+                    int temp = snowflakesCountOnScreen;
+                    for (int i = snowflakesCountOnScreen; i < snowflakesCountOnScreen + snowflakesCount; i++) {
+                        snowflakes[i] = new Snowflake(
+                            snowdrift, consoleWidth, consoleHeight
+                        );
+                        temp++;
+                    }
+                    snowflakesCountOnScreen = temp;
+                }
                 snowdrift.Update();
-                foreach (var snowflake in snowflakes) snowflake.Fall();
-                System.Threading.Thread.Sleep(1000);
+                foreach (var snowflake in snowflakes) {
+                    if (!(snowflake is null)) snowflake.Fall();
+                    else break;
+                }
+                System.Threading.Thread.Sleep(100);
                 Console.Clear();
             }
         }
     }
  
-
+ 
     class Snowflake {
         public int SpeedY { get; set; }
         public Snowdrift SnowDrift;
         public char Symb { get; set; }
+        public ConsoleColor Color { get; set; }
  
         public int X { get; set; }
         public int Y { get; set; }
@@ -40,52 +53,71 @@ namespace Snowfall {
         private bool Wind, Right = false;
  
  
-        public Snowflake(Snowdrift snowdrift, int speed = 1, int ww = 20, 
-                         int wh = 20, bool wind = false, char symb = '*') {
+        public Snowflake(Snowdrift snowdrift, int ww, int wh, 
+                         int speed = 1, bool wind = false, char symb = '*') {
             SpeedY = speed;
             SnowDrift = snowdrift;
             Wind = wind;
+            Color = GetRandomColor();
  
             Random rnd = new Random();
             Ww = ww;
             Wh = wh;
             X = rnd.Next(1, Ww);
-            Y = rnd.Next(1, Wh);
+            Y = 1;
  
             Symb = symb;
         }
  
         public void Fall() {
             // Реализует падение снежинки
-
-            if (SnowDrift.IsSnowflakeInSnowdrift(this)) return;  // Если эта снижиника в сугробе, то не падаем дальше
  
-            Y += SpeedY;
-            if (Wind) X += 2;  // Если ветер, то только вправо
-            else {  // Если ветра нет, то в стороны по очередно
-                if (Right) X++;
-                else X--;
-                Right = !Right;
+            if (SnowDrift.IsSnowflakeInSnowdrift(this)) {
+                // Если эта снижиника в сугробе, то не падаем дальше
+                return;
+            } 
+ 
+            int tempY = Y, tempX = X;
+            bool tempRight = Right;
+ 
+            tempY += SpeedY;
+            if (Wind) tempX += 2;  // Если ветер, то только вправо
+            else {  // Если ветра нет, то в стороны поочередно
+                if (tempRight) tempX++;
+                else tempX--;
+                tempRight = !tempRight;
             }
-            if (X >= Ww) X = 1;
-            if (Y >= Wh) Y = 1;
+ 
+            if (SnowDrift.IsCellFree(tempX, tempY)) {
+                X = tempX; Y = tempY; Right = tempRight;
+            } else if (SnowDrift.IsCellFree(X, tempY)) {
+                Y = tempY;
+            } else {
+                SnowDrift.AddSnowflake(this);
+                return;
+            }
+            if (Y >= Wh) {
+                SnowDrift.AddSnowflake(this);
+                return;
+            }
+            if (X >= Ww) X = 1; if (X <= 0) X = Ww - 1;
  
             ShowSnowflake();
         }
  
         public void ShowSnowflake() {
             // Отрисовка снежинки
-            
+ 
             Console.SetCursorPosition(X, Y);
-            Console.ForegroundColor = GetRandomColor();
+            Console.ForegroundColor = Color;
             Console.Write(Symb);
         }
  
         private ConsoleColor GetRandomColor() {
             // Получение случайного цвета
-
+ 
             ConsoleColor[] colors = {
-                ConsoleColor.Black, ConsoleColor.Gray, ConsoleColor.Blue, 
+                ConsoleColor.Gray, ConsoleColor.Blue, 
                 ConsoleColor.Green, ConsoleColor.Cyan, ConsoleColor.Red
             };
             Random rnd = new Random();
@@ -107,13 +139,20 @@ namespace Snowfall {
  
         public void Update() {
             // Отрисовка всех снежинок
+ 
+            foreach (Snowflake snowflake in snowflakes) {
+                if (!(snowflake is null)) snowflake.ShowSnowflake();
+            }
+            // foreach (Snowflake snowflake in snowflakes) snowflake.ShowSnowflake();
+        }
 
-            foreach (var snowflake in snowflakes) snowflake.ShowSnowflake();
+        public void AddSnowflake(Snowflake snowflake) {
+            snowflakes = snowflakes.Append(snowflake).ToArray();
         }
  
         public bool IsSnowflakeInSnowdrift(Snowflake snowflake) {
             // Есть ли снежинка в сугробе
-
+ 
             foreach (var snowflakeItem in snowflakes) {
                 if (snowflakeItem == snowflake) return true;
             }
@@ -123,9 +162,11 @@ namespace Snowfall {
  
         public bool IsCellFree(int x, int y) {
             // Есть ли место для снежинки в данной ячейке
-
+ 
             foreach (var snowflake in snowflakes) {
-                if (snowflake.X == x && snowflake.Y == y) return false;
+                if (!(snowflake is null)) {
+                    if (snowflake.X == x && snowflake.Y == y) return false;
+                }
             }
  
             return true;

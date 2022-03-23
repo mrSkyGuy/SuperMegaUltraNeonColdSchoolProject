@@ -1,0 +1,15 @@
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\Snowfall.exe
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\Snowfall.deps.json
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\Snowfall.runtimeconfig.json
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\Snowfall.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\ref\Snowfall.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\bin\Debug\net6.0\Snowfall.pdb
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.csproj.AssemblyReference.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.AssemblyInfoInputs.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.AssemblyInfo.cs
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.csproj.CoreCompileInputs.cache
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\ref\Snowfall.dll
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.pdb
+c:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Snowfall\obj\Debug\net6.0\Snowfall.genruntimeconfig.cache
