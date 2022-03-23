@@ -7,7 +7,7 @@ namespace Snowfall {
             Console.Clear();
  
             const int snowflakesCount = 5,  // Количество снежинок
-                      consoleWidth = 100,
+                      consoleWidth = 110,
                       consoleHeight = 40;
             int snowflakesCountOnScreen = 0;
  
@@ -17,13 +17,36 @@ namespace Snowfall {
             Console.SetWindowSize(consoleWidth, consoleHeight);
             Console.CursorVisible = false;
  
- 
-            while (true) {
-                if (snowflakesCountOnScreen + snowflakesCount < consoleHeight * consoleWidth / 20) {
+            bool pause = false, run = true;
+            int fps = 50;
+            int d = 20;
+            while (run) {
+                if (Console.KeyAvailable) {
+                    switch (Console.ReadKey().Key) {
+                        case ConsoleKey.Escape:  // Завершение работы приложения
+                            run = false;
+                            break;
+                        case ConsoleKey.Spacebar:  // Пауза
+                            pause = !pause;
+                            break;
+                        case ConsoleKey.UpArrow:  // Ускорение
+                            fps -= fps >= 40 ? 10 : 0;
+                            break;
+                        case ConsoleKey.DownArrow:  // Замедление
+                            fps += fps <= 2000 ? 10 : 0;
+                            break;
+                        case ConsoleKey.Enter:  // Новая волна
+                            d -= d >= 3 ? 1 : 0;
+                            break;
+                    }
+                }
+                if (pause) continue;
+
+                if (snowflakesCountOnScreen + snowflakesCount < consoleHeight * consoleWidth / d) {
                     int temp = snowflakesCountOnScreen;
                     for (int i = snowflakesCountOnScreen; i < snowflakesCountOnScreen + snowflakesCount; i++) {
                         snowflakes[i] = new Snowflake(
-                            snowdrift, consoleWidth, consoleHeight
+                            snowdrift, consoleWidth, consoleHeight, symb: '+'
                         );
                         temp++;
                     }
@@ -34,9 +57,24 @@ namespace Snowfall {
                     if (!(snowflake is null)) snowflake.Fall();
                     else break;
                 }
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(fps);
                 Console.Clear();
             }
+            Console.Clear();
+            Console.WriteLine(@"
+░██████╗██████╗░██████╗░██╗███╗░░██╗░██████╗░  ░█████╗░██╗░░░░░██████╗░███████╗░█████╗░██████╗░██╗░░░██╗
+██╔════╝██╔══██╗██╔══██╗██║████╗░██║██╔════╝░  ██╔══██╗██║░░░░░██╔══██╗██╔════╝██╔══██╗██╔══██╗╚██╗░██╔╝
+╚█████╗░██████╔╝██████╔╝██║██╔██╗██║██║░░██╗░  ███████║██║░░░░░██████╔╝█████╗░░███████║██║░░██║░╚████╔╝░
+░╚═══██╗██╔═══╝░██╔══██╗██║██║╚████║██║░░╚██╗  ██╔══██║██║░░░░░██╔══██╗██╔══╝░░██╔══██║██║░░██║░░╚██╔╝░░
+██████╔╝██║░░░░░██║░░██║██║██║░╚███║╚██████╔╝  ██║░░██║███████╗██║░░██║███████╗██║░░██║██████╔╝░░░██║░░░
+╚═════╝░╚═╝░░░░░╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░  ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░
+
+██╗░██████╗  ██╗░░██╗███████╗██████╗░███████╗
+██║██╔════╝  ██║░░██║██╔════╝██╔══██╗██╔════╝
+██║╚█████╗░  ███████║█████╗░░██████╔╝█████╗░░
+██║░╚═══██╗  ██╔══██║██╔══╝░░██╔══██╗██╔══╝░░
+██║██████╔╝  ██║░░██║███████╗██║░░██║███████╗
+╚═╝╚═════╝░  ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝");
         }
     }
  

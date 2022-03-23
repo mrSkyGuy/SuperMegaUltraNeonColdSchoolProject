@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj": {}
+    "C:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj": {}
   },
   "projects": {
-    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj": {
+    "C:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj",
+        "projectUniqueName": "C:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj",
         "projectName": "Snowfall",
-        "projectPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj",
+        "projectPath": "C:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\Snowfall.csproj",
         "packagesPath": "C:\\Users\\nurma\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\obj\\",
+        "outputPath": "C:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Snowfall\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nurma\\AppData\\Roaming\\NuGet\\NuGet.Config"
