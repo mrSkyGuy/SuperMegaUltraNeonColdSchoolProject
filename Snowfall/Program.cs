@@ -40,11 +40,11 @@ namespace Snowfall {
                             break;
                     }
                 }
-                if (pause) continue;
-
+ 
                 if (snowflakesCountOnScreen + snowflakesCount < consoleHeight * consoleWidth / d) {
                     int temp = snowflakesCountOnScreen;
                     for (int i = snowflakesCountOnScreen; i < snowflakesCountOnScreen + snowflakesCount; i++) {
+                        if (pause) break;
                         snowflakes[i] = new Snowflake(
                             snowdrift, consoleWidth, consoleHeight, symb: '+'
                         );
@@ -54,7 +54,10 @@ namespace Snowfall {
                 }
                 snowdrift.Update();
                 foreach (var snowflake in snowflakes) {
-                    if (!(snowflake is null)) snowflake.Fall();
+                    if (!(snowflake is null)) {
+                        if (pause) snowflake.ShowSnowflake();
+                        else snowflake.Fall();
+                    } 
                     else break;
                 }
                 System.Threading.Thread.Sleep(fps);
@@ -68,7 +71,7 @@ namespace Snowfall {
 ░╚═══██╗██╔═══╝░██╔══██╗██║██║╚████║██║░░╚██╗  ██╔══██║██║░░░░░██╔══██╗██╔══╝░░██╔══██║██║░░██║░░╚██╔╝░░
 ██████╔╝██║░░░░░██║░░██║██║██║░╚███║╚██████╔╝  ██║░░██║███████╗██║░░██║███████╗██║░░██║██████╔╝░░░██║░░░
 ╚═════╝░╚═╝░░░░░╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░  ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░
-
+ 
 ██╗░██████╗  ██╗░░██╗███████╗██████╗░███████╗
 ██║██╔════╝  ██║░░██║██╔════╝██╔══██╗██╔════╝
 ██║╚█████╗░  ███████║█████╗░░██████╔╝█████╗░░
@@ -183,7 +186,7 @@ namespace Snowfall {
             }
             // foreach (Snowflake snowflake in snowflakes) snowflake.ShowSnowflake();
         }
-
+ 
         public void AddSnowflake(Snowflake snowflake) {
             snowflakes = snowflakes.Append(snowflake).ToArray();
         }
