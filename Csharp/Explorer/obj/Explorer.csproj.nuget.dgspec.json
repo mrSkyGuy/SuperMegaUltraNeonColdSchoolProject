@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Explorer\\Explorer.csproj": {}
+    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Csharp\\Explorer\\Explorer.csproj": {}
   },
   "projects": {
-    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Explorer\\Explorer.csproj": {
+    "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Csharp\\Explorer\\Explorer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Explorer\\Explorer.csproj",
+        "projectUniqueName": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Csharp\\Explorer\\Explorer.csproj",
         "projectName": "Explorer",
-        "projectPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Explorer\\Explorer.csproj",
+        "projectPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Csharp\\Explorer\\Explorer.csproj",
         "packagesPath": "C:\\Users\\nurma\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Explorer\\obj\\",
+        "outputPath": "c:\\Users\\nurma\\myLife-xD\\SuperMegaUltraNeonColdSchoolProject\\Csharp\\Explorer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\nurma\\AppData\\Roaming\\NuGet\\NuGet.Config"

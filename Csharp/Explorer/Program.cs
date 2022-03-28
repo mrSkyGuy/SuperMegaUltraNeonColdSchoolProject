@@ -10,36 +10,42 @@ class Program {
         while (true) {
             if (command != null) {
                 string[] commandParts = command.Split(' ');
-                if (commandParts[0] == "exit") return;
-                else if (commandParts[0] == "cd") {
-                    string reqDir = Join(commandParts[1..]);
-                    Console.WriteLine(reqDir);
-                    Directory.SetCurrentDirectory(reqDir);
-                } else if (commandParts[0] == "md") {
-                    string dirName = Join(commandParts[1..]);
-                    Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\" + dirName);
-                } else if (commandParts[0] == "deldir") {
-                    string dirName = Join(commandParts[1..]);
-                    try {
-                        Directory.Delete(Directory.GetCurrentDirectory() + "\\"  + dirName, true);
-                    } catch (Exception) {
-                        Console.WriteLine("Directory not found, bruh!");
+                string dfName = Join(commandParts[1..]);
+                switch (commandParts[0]) {
+                    case "exit":
+                        return;
+                        break;
+                    case "cd":
+                        Console.WriteLine(dfName);
+                        Directory.SetCurrentDirectory(dfName);
+                        break;
+                    case "md":
+                        Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\" + dfName);
+                        break;
+                    case "deldir":
+                        try {
+                            Directory.Delete(Directory.GetCurrentDirectory() + "\\"  + dfName, true);
+                        } catch (Exception) {
+                            Console.WriteLine("Directory not found, bruh!");
+                            updateConsole = false;
+                        }
+                        break;
+                    case "delf":
+                        try {
+                            File.Delete(Directory.GetCurrentDirectory() + "\\"  + dfName);
+                        } catch (Exception) {
+                            Console.WriteLine("File not found, bruh!");
+                            updateConsole = false;
+                        }
+                        break;
+                    case "help":
+                        Console.WriteLine("There are the commands: exit, cd, md, deldir, delf, help");
                         updateConsole = false;
-                    }
-                } else if (commandParts[0] == "delf") {
-                    string fileName = Join(commandParts[1..]);
-                    try {
-                        File.Delete(Directory.GetCurrentDirectory() + "\\"  + fileName);
-                    } catch (Exception) {
-                        Console.WriteLine("File not found, bruh!");
+                        break;
+                    default:
+                        Console.WriteLine($"There is not the command: {command}");
                         updateConsole = false;
-                    }
-                } else if (commandParts[0] == "help") {
-                    Console.WriteLine("There are the commands: exit, cd, md, deldir, delf, help");
-                    updateConsole = false;
-                } else {
-                    Console.WriteLine($"There is not the command: {command}");
-                    updateConsole = false;
+                        break;
                 }
             }
  
@@ -50,7 +56,7 @@ class Program {
                 string[] files = Directory.GetFiles(curDir);
                 string[][] data = {dirs, files};
                 string[] header = {"dirs", "files"};
-                int tableWidth = 101;
+                int tableWidth = 101, tableHeight = 30;
  
                 PrintHorizontalLineWithTitle('-', tableWidth, curDir);
                 PrintHeader(header, tableWidth);
