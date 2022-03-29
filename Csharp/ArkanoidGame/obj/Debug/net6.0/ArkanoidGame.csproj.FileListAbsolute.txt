@@ -1,0 +1,15 @@
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.csproj.AssemblyReference.cache
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.AssemblyInfoInputs.cache
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.AssemblyInfo.cs
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.csproj.CoreCompileInputs.cache
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ArkanoidGame.exe
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ArkanoidGame.deps.json
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ArkanoidGame.runtimeconfig.json
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ArkanoidGame.dll
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ref\ArkanoidGame.dll
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\bin\Debug\net6.0\ArkanoidGame.pdb
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.dll
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ref\ArkanoidGame.dll
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.pdb
+C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\obj\Debug\net6.0\ArkanoidGame.genruntimeconfig.cache
