@@ -14,7 +14,6 @@ class Program {
                 switch (commandParts[0]) {
                     case "exit":
                         return;
-                        break;
                     case "cd":
                         Console.WriteLine(dfName);
                         Directory.SetCurrentDirectory(dfName);
@@ -56,7 +55,7 @@ class Program {
                 string[] files = Directory.GetFiles(curDir);
                 string[][] data = {dirs, files};
                 string[] header = {"dirs", "files"};
-                int tableWidth = 101, tableHeight = 30;
+                int tableWidth = 101;
  
                 PrintHorizontalLineWithTitle('-', tableWidth, curDir);
                 PrintHeader(header, tableWidth);
