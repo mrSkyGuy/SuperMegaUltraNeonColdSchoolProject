@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 // cd C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\ && dotnet run
-struct ConsoleSettings {
-    static public int height = 35,
-                      width = 70, 
-                      fps = 10;
+struct GameSettings {
+    static public int consoleHeight = 35,
+                      consoleWidth = 70, 
+                      fps = 10,
+                      bricksCount = 16 * 10,
+                      brickWidth = 3,
+                      barWidth = 10;
 }
 
 
@@ -14,11 +18,13 @@ class Program {
     static void Main(string[] args) {
         Console.CursorVisible = false;
         Console.Clear();
-        Console.SetWindowSize(ConsoleSettings.width, ConsoleSettings.height);
-        
+        Console.SetWindowSize(GameSettings.consoleWidth, GameSettings.consoleHeight);
+
         bool run = true;
         Ball ball = new Ball();
         Bar bar = new Bar();
+        List<Brick> bricks = new List<Brick>() {};
+        generateBricks(ref bricks);
         while (run) {
             if (Console.KeyAvailable) switch (Console.ReadKey().Key) {
                 case ConsoleKey.LeftArrow:
@@ -31,13 +37,29 @@ class Program {
             ball.move();
             ball.checkColideWithBar(bar);
             bar.show();
-            System.Threading.Thread.Sleep(1000 / ConsoleSettings.fps);
+            foreach (Brick brick in bricks) { 
+                brick.show();
+                brick.checkCollideWithBall(ball);
+            } 
+            System.Threading.Thread.Sleep(1000 / GameSettings.fps);
             if (!ball.isAlive) run = false;
+        }
+    }
+
+    static private void generateBricks(ref List<Brick> bricks) {
+        int x = 2, y = 2;
+        for (int i = 0; i < GameSettings.bricksCount; i++) {
+            bricks.Add(new Brick(x, y));
+            x += GameSettings.brickWidth + 1;
+            if (x >= GameSettings.consoleWidth - GameSettings.brickWidth - 1) {
+                x = 2;
+                y += 2;
+            }
         }
     }
 }
 
- 
+
 class Ball {
     public int speedX { get; set; } 
     public int speedY { get; set; }
@@ -58,7 +80,7 @@ class Ball {
         this.symb = 'o';
         this.symbColor = ConsoleColor.Red;
         this.isAlive = true;
-    } public Ball(): this(ConsoleSettings.width / 2, ConsoleSettings.height / 2) {}
+    } public Ball(): this(GameSettings.consoleWidth / 2, GameSettings.consoleHeight / 2) {}
 
     public void move() {
         hide();
@@ -66,8 +88,8 @@ class Ball {
         coordY += speedY;
         show();
 
-        if ((coordX >= ConsoleSettings.width - 1) || (coordX <= 2)) speedX *= -1;
-        if (coordY >= ConsoleSettings.height - 1) { remove(); hide(); }
+        if ((coordX >= GameSettings.consoleWidth - 1) || (coordX <= 1)) speedX *= -1;
+        if (coordY >= GameSettings.consoleHeight - 1) { remove(); hide(); }
         if (coordY <= 0) speedY *= -1;
     }
  
@@ -89,7 +111,7 @@ class Ball {
     }
 
     public void checkColideWithBar(Bar bar) {
-        if (bar.coordsX.Contains(this.coordX) && bar.coordY == this.coordY) speedY *= -1;
+        if (bar.coordsX.Contains(this.coordX) && bar.coordY - 1 == this.coordY) speedY *= -1;
     }
 }
 
@@ -104,9 +126,9 @@ class Bar {
     private char symb = '=';
 
     public Bar() {
-        width = 10;
-        coordX = ConsoleSettings.width / 2 - width / 2;
-        coordY = ConsoleSettings.height - 2;
+        width = GameSettings.barWidth;
+        coordX = GameSettings.consoleWidth / 2 - width / 2;
+        coordY = GameSettings.consoleHeight - 2;
         speedX = 2;
 
         updateCoordsX();
@@ -134,8 +156,75 @@ class Bar {
     public void moveRight() {
         hide();
         coordX += speedX;
-        if (coordX >= ConsoleSettings.width - width - 1) coordX = ConsoleSettings.width - width - 2;
+        if (coordX >= GameSettings.consoleWidth - width - 1) coordX = GameSettings.consoleWidth - width - 2;
         updateCoordsX();
+    }
+
+    private void updateCoordsX() {
+        coordsX = new int[width];
+        for (int i = 0; i < width; i++) coordsX[i] = coordX + i;
+    } 
+}
+
+
+class Brick {
+    public int width;
+    public int coordX { get; set; }
+    public int[] coordsX { get; set; }
+    public int coordY { get; set; } 
+    public ConsoleColor color;
+
+    private char symb;
+    private bool isAlive;
+
+    public Brick(int x, int y, ConsoleColor color = ConsoleColor.Blue) {
+        coordX = x;
+        coordY = y;
+        this.color = color;
+        width = GameSettings.brickWidth;
+
+        symb = '■';
+        isAlive = true;
+
+        updateCoordsX();
+    }
+
+    public void show() {
+        if (!isAlive) return;
+
+        Console.ForegroundColor = color;
+        Console.SetCursorPosition(coordX, coordY);
+        for (int i = 0; i < width; i++) Console.Write(symb);
+        Console.ResetColor();
+    }
+
+    public void hide() {
+        Console.SetCursorPosition(coordX, coordY);
+        for (int i = 0; i < width; i++) Console.Write(' ');
+    }
+
+    public void remove() {
+        hide();
+        isAlive = false;
+        symb = ' ';
+    }
+
+    public void checkCollideWithBall(Ball ball) {
+        if (  // Снизу и сверху
+            (coordsX.Contains(ball.coordX) && coordY - 1 == ball.coordY) ||
+            (coordsX.Contains(ball.coordX) && coordY + 1 == ball.coordY)
+        ) {
+            remove();
+            ball.speedY *= -1;
+        }
+
+        if (  // Слева и справа
+            (coordsX.Contains(ball.coordX + 1) && coordY == ball.coordY) ||
+            (coordsX.Contains(ball.coordX - 1) && coordY == ball.coordY)
+        ) {
+            remove();
+            ball.speedX *= -1;
+        }
     }
 
     private void updateCoordsX() {
