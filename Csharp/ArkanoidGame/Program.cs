@@ -11,6 +11,7 @@ struct GameSettings {
                       bricksCount = 16 * 10,
                       brickWidth = 3,
                       barWidth = 10;
+    static public string? mapName;
 }
 
 
@@ -18,7 +19,32 @@ class Program {
     static void Main(string[] args) {
         Console.CursorVisible = false;
         Console.Clear();
+
+        StartGameWindow startGameWindow = new StartGameWindow();
+        while (!startGameWindow.isGameStarted) {
+            if (Console.KeyAvailable) switch (Console.ReadKey().Key) {
+                case ConsoleKey.LeftArrow:
+                    startGameWindow.indexOfCursor -= 1;
+                    break;
+                case ConsoleKey.RightArrow:
+                    startGameWindow.indexOfCursor += 1;
+                    break;
+                case ConsoleKey.Enter:
+                    startGameWindow.clickCurrentButton();
+                    break;
+            }
+
+            startGameWindow.show();
+
+            System.Threading.Thread.Sleep(1000 / GameSettings.fps);
+        }
+
+        runGame();
+    }
+    
+    static void runGame() {
         Console.SetWindowSize(GameSettings.consoleWidth, GameSettings.consoleHeight);
+        Console.Clear();
 
         bool run = true;
         Ball ball = new Ball(
@@ -236,4 +262,93 @@ class Brick {
         coordsX = new int[width];
         for (int i = 0; i < width; i++) coordsX[i] = coordX + i;
     } 
+}
+
+
+class StartGameWindow {
+    public int indexOfCursor { get; set; }
+    public ConsoleColor colorOfCursor { get; set; }
+    public string choosedMapName { get; }
+    public bool isGameStarted { get; set; }
+
+    private int windowWidth;
+    private int windowHeight;
+    private string startText;
+    
+    public StartGameWindow() {
+        indexOfCursor = 0;
+        colorOfCursor = ConsoleColor.Red;
+        choosedMapName = "classic.map";
+        isGameStarted = false;
+
+        windowWidth = 70;
+        windowHeight = 20;
+        Console.SetWindowSize(windowWidth, windowHeight);
+        startText = "█▀ ▀█▀ ▄▀█ █▀█ ▀█▀\n▄█ ░█░ █▀█ █▀▄ ░█░";
+    }
+
+    public void show() {
+        showStartText();
+    }
+
+    public void clickCurrentButton() {
+        if (indexOfCursor % 2 == 0) {
+            isGameStarted = true;
+        }
+    }
+
+    private void showStartText() {
+        if (indexOfCursor % 2 == 0) {  // Вывод вехней обводки
+            Console.ForegroundColor = colorOfCursor;
+
+            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2);
+            Console.Write("+");
+            for (int i = 0; i < startText.Length / 2; i++) Console.Write("-");
+            Console.Write("+");
+
+            Console.ResetColor();
+        } else {  // Стираем верхнюю обводку
+            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2);
+            Console.Write(string.Join("", Enumerable.Repeat(" ", startText.Length / 2 + 2)));
+        }
+
+        int k = 1;  // Для того, чтобы перемещать курсор (Надпись начать игру многострочная, поэтому приходится использовать данный способ)
+        foreach (string part in startText.Split('\n')) {
+            Console.SetCursorPosition(
+                windowWidth / 3 - startText.Length / 2 - 1,
+                windowHeight / 2 + k
+            );
+            if (indexOfCursor % 2 == 0) { 
+                Console.ForegroundColor = colorOfCursor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
+
+            Console.Write(part);
+            
+            if (indexOfCursor % 2 == 0) {
+                Console.ForegroundColor = colorOfCursor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
+            k++;
+        }
+
+        if (indexOfCursor % 2 == 0) {
+            Console.ForegroundColor = colorOfCursor;
+
+            Console.SetCursorPosition(
+                windowWidth / 3 - startText.Length / 2 - 1, 
+                windowHeight / 2 + (startText.Length / (startText.Length / 2)) + 1
+            );
+            Console.Write("+");
+            for (int i = 0; i < startText.Length / 2; i++) Console.Write("-");
+            Console.Write("+");
+
+            Console.ResetColor();
+        }  else {  // Стираем верхнюю обводку
+            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2 + (startText.Length / (startText.Length / 2)) + 1);
+            Console.Write(string.Join("", Enumerable.Repeat(" ", startText.Length / 2 + 2)));
+        }
+    }
 }
