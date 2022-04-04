@@ -21,7 +21,9 @@ class Program {
         Console.SetWindowSize(GameSettings.consoleWidth, GameSettings.consoleHeight);
 
         bool run = true;
-        Ball ball = new Ball();
+        Ball ball = new Ball(
+            GameSettings.consoleWidth / 2, GameSettings.consoleHeight / 1.5
+        );
         Bar bar = new Bar();
         List<Brick> bricks = new List<Brick>() {};
         generateBricks(ref bricks);
@@ -70,9 +72,9 @@ class Ball {
     private char symb;
     private ConsoleColor symbColor;
  
-    public Ball(int coordX, int coordY) {
-        this.coordX = coordX;
-        this.coordY = coordY;
+    public Ball(double coordX, double coordY) {
+        this.coordX = Convert.ToInt32(coordX);
+        this.coordY = Convert.ToInt32(coordY);
  
         this.speedX = 1;
         this.speedY = 1;
@@ -129,6 +131,7 @@ class Bar {
         width = GameSettings.barWidth;
         coordX = GameSettings.consoleWidth / 2 - width / 2;
         coordY = GameSettings.consoleHeight - 2;
+        coordsX = new int[width];
         speedX = 2;
 
         updateCoordsX();
@@ -180,6 +183,7 @@ class Brick {
     public Brick(int x, int y, ConsoleColor color = ConsoleColor.Blue) {
         coordX = x;
         coordY = y;
+        coordsX = new int[width];
         this.color = color;
         width = GameSettings.brickWidth;
 
@@ -210,6 +214,7 @@ class Brick {
     }
 
     public void checkCollideWithBall(Ball ball) {
+        if (!isAlive) return;
         if (  // Снизу и сверху
             (coordsX.Contains(ball.coordX) && coordY - 1 == ball.coordY) ||
             (coordsX.Contains(ball.coordX) && coordY + 1 == ball.coordY)
