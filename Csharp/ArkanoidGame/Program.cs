@@ -305,6 +305,7 @@ class StartGameWindow {
     int windowHeight;
     string gameNameText;
     string startText;
+    string chooseMapText;
  
     public StartGameWindow() {
         cursorIndex = 0;
@@ -317,96 +318,111 @@ class StartGameWindow {
         windowHeight = 20;
         Console.SetWindowSize(windowWidth, windowHeight);
  
-        gameNameText = "▒█▀▀▀█ █░█ █░░█ ░█▀▀█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀█ ░▀░ █▀▀▄\n░▀▀▀▄▄ █▀▄ █▄▄█ ▒█▄▄█ █▄▄▀ █░░ █▄▄█ █░░█ █░░█ ▀█▀ █░░█\n▒█▄▄▄█ ▀░▀ ▄▄▄█ ▒█░▒█ ▀░▀▀ ▀▀▀ ▀░░▀ ▀░░▀ ▀▀▀▀ ▀▀▀ ▀▀▀░";
-        /*
-            ▒█▀▀▀█ █░█ █░░█ ░█▀▀█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀█ ░▀░ █▀▀▄ 
-            ░▀▀▀▄▄ █▀▄ █▄▄█ ▒█▄▄█ █▄▄▀ █░░ █▄▄█ █░░█ █░░█ ▀█▀ █░░█ 
-            ▒█▄▄▄█ ▀░▀ ▄▄▄█ ▒█░▒█ ▀░▀▀ ▀▀▀ ▀░░▀ ▀░░▀ ▀▀▀▀ ▀▀▀ ▀▀▀░
-        */
-        startText = "█▀ ▀█▀ ▄▀█ █▀█ ▀█▀\n▄█ ░█░ █▀█ █▀▄ ░█░"; 
-        /*
-            █▀ ▀█▀ ▄▀█ █▀█ ▀█▀
-            ▄█ ░█░ █▀█ █▀▄ ░█░
-        */
+        gameNameText = "▒█▀▀▀█ █░█ █░░█ ░█▀▀█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀█ ░▀░ █▀▀▄\n"
+                     + "░▀▀▀▄▄ █▀▄ █▄▄█ ▒█▄▄█ █▄▄▀ █░░ █▄▄█ █░░█ █░░█ ▀█▀ █░░█\n"
+                     + "▒█▄▄▄█ ▀░▀ ▄▄▄█ ▒█░▒█ ▀░▀▀ ▀▀▀ ▀░░▀ ▀░░▀ ▀▀▀▀ ▀▀▀ ▀▀▀░";
+
+        startText = "█▀ ▀█▀ ▄▀█ █▀█ ▀█▀\n"
+                  + "▄█ ░█░ █▀█ █▀▄ ░█░";
+        
+        chooseMapText = "█▀▀ █░█ █▀█ █▀█ █▀ █▀▀  █▀▄▀█ ▄▀█ █▀█\n"
+                      + "█▄▄ █▀█ █▄█ █▄█ ▄█ ██▄  █░▀░█ █▀█ █▀▀";
     }
  
     public void show() {
-        showGameNameText();
-        showStartText();
+        Console.ForegroundColor = gameNameTextColor;
+        showText(gameNameText, windowWidth / 2, windowHeight / 2 - 1, false);
+        Console.ResetColor();
+
+        showText(
+            startText, 
+            windowWidth / 3 - 5, 
+            windowHeight / 2 + windowHeight / 4, 
+            Math.Abs(cursorIndex) % 2 == 0
+        );
+
+        showText(
+            chooseMapText,
+            windowWidth * 2 / 3,
+            windowHeight / 2 + windowHeight / 4,
+            Math.Abs(cursorIndex) % 2 == 1
+        );
     }
  
     public void clickCurrentButton() {
-        if (cursorIndex % 2 == 0) {
+        if (Math.Abs(cursorIndex) % 2 == 0) {
             isGameStarted = true;
         }
     }
- 
-    void showStartText() {
-        if (cursorIndex % 2 == 0) {  // Вывод вехней обводки
-            Console.ForegroundColor = cursorColor;
- 
-            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2);
-            Console.Write("+");
-            for (int i = 0; i < startText.Length / 2; i++) Console.Write("-");
-            Console.Write("+");
- 
-            Console.ResetColor();
-        } else {  // Стираем верхнюю обводку
-            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2);
-            Console.Write(string.Join("", Enumerable.Repeat(" ", startText.Length / 2 + 2)));
-        }
- 
-        int k = 1;  // Для того, чтобы перемещать курсор (Надпись начать игру многострочная, поэтому приходится использовать данный способ)
-        foreach (string part in startText.Split('\n')) {
-            Console.SetCursorPosition(
-                windowWidth / 3 - startText.Length / 2 - 1,
-                windowHeight / 2 + k
-            );
-            if (cursorIndex % 2 == 0) { 
-                Console.ForegroundColor = cursorColor;
-                Console.Write("|");
-                Console.ResetColor();
-            } else Console.Write(" ");
- 
-            Console.Write(part);
- 
-            if (cursorIndex % 2 == 0) {
-                Console.ForegroundColor = cursorColor;
-                Console.Write("|");
-                Console.ResetColor();
-            } else Console.Write(" ");
-            k++;
-        }
- 
-        if (cursorIndex % 2 == 0) {
+
+    void showText(string text, int x, int y, bool cursorOn) {
+        // Верхняя обводка
+        if (cursorOn) {
             Console.ForegroundColor = cursorColor;
  
             Console.SetCursorPosition(
-                windowWidth / 3 - startText.Length / 2 - 1, 
-                windowHeight / 2 + (startText.Length / (startText.Length / 2)) + 1
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 - 1
             );
-            Console.Write("+");
-            for (int i = 0; i < startText.Length / 2; i++) Console.Write("-");
-            Console.Write("+");
+            Console.Write(
+                "+"
+                + string.Join("", Enumerable.Repeat("-", text.Split('\n')[0].Length))
+                + "+"
+            );
  
             Console.ResetColor();
-        }  else {  // Стираем верхнюю обводку
-            Console.SetCursorPosition(windowWidth / 3 - startText.Length / 2 - 1, windowHeight / 2 + (startText.Length / (startText.Length / 2)) + 1);
-            Console.Write(string.Join("", Enumerable.Repeat(" ", startText.Length / 2 + 2)));
+        } else {
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 - 1
+            );
+            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
         }
-    }
- 
-    void showGameNameText() {
-        Console.ForegroundColor = gameNameTextColor;
+
+        // Контент (текст)
         int k = 1;
-        foreach (string part in gameNameText.Split('\n')) {
+        foreach (string part in text.Split('\n')) {
             Console.SetCursorPosition(
-                windowWidth / 2 - gameNameText.Length / gameNameText.Split('\n').Length / 2,
-                (windowHeight / 2 - windowHeight / 4) - 2 + k
+                x - part.Split('\n')[0].Length / 2 - 1,
+                y - text.Split('\n').Length / 2 - 1 + k
             );
+            if (cursorOn) { 
+                Console.ForegroundColor = cursorColor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
+ 
             Console.Write(part);
+ 
+            if (cursorOn) {
+                Console.ForegroundColor = cursorColor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
             k++;
         }
-        Console.ResetColor();
+
+        // Нижняя обводка
+        if (cursorOn) {
+            Console.ForegroundColor = cursorColor;
+ 
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 + text.Split('\n').Length
+            );
+            Console.Write(
+                "+"
+                + string.Join("", Enumerable.Repeat("-", text.Split('\n')[0].Length))
+                + "+"
+            );
+ 
+            Console.ResetColor();
+        } else {
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 + text.Split('\n').Length
+            );
+            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+        }
     }
 }
