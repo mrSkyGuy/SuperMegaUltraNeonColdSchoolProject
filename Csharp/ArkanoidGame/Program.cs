@@ -11,7 +11,7 @@ struct GameSettings {
                       bricksCount = 16 * 10,
                       brickWidth = 3,
                       barWidth = 10;
-    static public string mapName;
+    static public string? mapName;
 }
  
  
@@ -327,6 +327,9 @@ class StartGameWindow {
         
         chooseMapText = "█▀▀ █░█ █▀█ █▀█ █▀ █▀▀  █▀▄▀█ ▄▀█ █▀█\n"
                       + "█▄▄ █▀█ █▄█ █▄█ ▄█ ██▄  █░▀░█ █▀█ █▀▀";
+        chooseMapText += '\n' + addSpaceAround(
+            string.Join("", choseMapName.Split('.')[..^1]), chooseMapText.Split('\n')[0].Length
+        );
     }
  
     public void show() {
@@ -348,10 +351,168 @@ class StartGameWindow {
             Math.Abs(cursorIndex) % 2 == 1
         );
     }
+
+    void showText(string text, int x, int y, bool cursorOn) {
+        // Верхняя обводка
+        if (cursorOn) {
+            Console.ForegroundColor = cursorColor;
  
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 - 1
+            );
+            Console.Write(
+                "+"
+                + string.Join("", Enumerable.Repeat("-", text.Split('\n')[0].Length))
+                + "+"
+            );
+ 
+            Console.ResetColor();
+        } else {
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 - 1
+            );
+            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+        }
+
+        // Контент (текст)
+        int k = 1;
+        foreach (string part in text.Split('\n')) {
+            Console.SetCursorPosition(
+                x - part.Split('\n')[0].Length / 2 - 1,
+                y - text.Split('\n').Length / 2 - 1 + k
+            );
+            if (cursorOn) { 
+                Console.ForegroundColor = cursorColor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
+ 
+            Console.Write(part);
+ 
+            if (cursorOn) {
+                Console.ForegroundColor = cursorColor;
+                Console.Write("|");
+                Console.ResetColor();
+            } else Console.Write(" ");
+            k++;
+        }
+
+        // Нижняя обводка
+        if (cursorOn) {
+            Console.ForegroundColor = cursorColor;
+ 
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 + text.Split('\n').Length
+            );
+            Console.Write(
+                "+"
+                + string.Join("", Enumerable.Repeat("-", text.Split('\n')[0].Length))
+                + "+"
+            );
+ 
+            Console.ResetColor();
+        } else {
+            Console.SetCursorPosition(
+                x - text.Split('\n')[0].Length / 2 - 1, 
+                y - text.Split('\n').Length / 2 + text.Split('\n').Length
+            );
+            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+        }
+    }
+
     public void clickCurrentButton() {
         if (Math.Abs(cursorIndex) % 2 == 0) {
             isGameStarted = true;
+        } else if (Math.Abs(cursorIndex) % 2 == 1) {
+            Console.Clear();
+            showChooseMapWindow();
+            Console.Clear();
+            Console.SetWindowSize(windowWidth, windowHeight);
+        }
+    }
+
+    void showChooseMapWindow() {
+        ChooseMapWindow chooseMapWindow = new ChooseMapWindow();
+        
+        bool run = true;
+        while (run) {
+            if (Console.KeyAvailable) switch (Console.ReadKey().Key) {
+                case ConsoleKey.Escape:
+                    run = false;
+                    break;
+                case ConsoleKey.UpArrow:
+                    chooseMapWindow.cursorIndex -= 1;
+                    break;
+                case ConsoleKey.DownArrow:
+                    chooseMapWindow.cursorIndex += 1;
+                    break;
+            }
+            if (!run) break;
+
+            chooseMapWindow.show();
+        }
+    }
+
+    string addSpaceAround(string text, int len) {
+        string result = "";
+
+        int spaceCount = len - text.Length;
+        if (spaceCount > 0) result += string.Join("", Enumerable.Repeat(
+                                                        " ", spaceCount / 2
+                                                      ));
+        result += text;
+        if (spaceCount > 0) result += string.Join("", Enumerable.Repeat(
+                                                        " ", spaceCount - spaceCount / 2
+                                                      ));
+        return result;
+    }
+}
+
+
+class ChooseMapWindow {
+    public int cursorIndex { get; set; }
+    public ConsoleColor cursorColor { get; set; }
+    public List<string> mapList { get; set; }
+    public string choseMapName { get; set; }
+    public bool isWindowClosed { get; set; }
+ 
+    int windowWidth;
+    int windowHeight;
+    string chooseMapText;
+
+    public ChooseMapWindow() {
+        cursorIndex = 0;
+        cursorColor = ConsoleColor.Red;
+        mapList = new List<string>();
+        fillMapList();
+        choseMapName = mapList[Math.Abs(cursorIndex) % mapList.Count];
+        isWindowClosed = false;
+
+        windowWidth = 120;
+        windowHeight = 40;
+        Console.SetWindowSize(windowWidth, windowHeight);
+
+        chooseMapText = "█▀▀ █░█ █▀█ █▀█ █▀ █▀▀  █▀▄▀█ ▄▀█ █▀█\n"
+                      + "█▄▄ █▀█ █▄█ █▄█ ▄█ ██▄  █░▀░█ █▀█ █▀▀";
+    }
+
+    public void show() {
+        showText(
+            chooseMapText, 
+            windowWidth / 2,
+            chooseMapText.Split('\n').Length, 
+            false
+        );
+    }
+
+    void fillMapList() {
+        foreach (string file in Directory.GetFiles("./maps/")) {
+            if (file.Split('.')[^1] == "map") {
+                mapList.Add(file.Split("/")[^1]);
+            }
         }
     }
 
