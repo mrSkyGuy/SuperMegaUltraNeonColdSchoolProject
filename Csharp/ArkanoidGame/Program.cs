@@ -11,7 +11,7 @@ struct GameSettings {
                       bricksCount = 16 * 10,
                       brickWidth = 3,
                       barWidth = 10;
-    static public string? mapName;
+    static public string mapName = "classic.map";
 }
  
  
@@ -54,7 +54,11 @@ class Program {
         bool run = true;
         bool pause = false;
         Ball ball = new Ball(
-            new Random().Next(GameSettings.consoleWidth / 2 - 10, GameSettings.consoleWidth / 2 + 10), GameSettings.consoleHeight / 1.7
+            new Random().Next(
+                GameSettings.consoleWidth / 2 - 15, 
+                GameSettings.consoleWidth / 2 + 15
+            ), 
+            GameSettings.consoleHeight / 1.7
         );
         Bar bar = new Bar();
         List<Brick> bricks = new List<Brick>() {};
@@ -95,8 +99,6 @@ class Program {
             if (!ball.isAlive) run = false;
             if (bricks.Count == 0) run = false;
         }
- 
- 
     }
  
     static void generateBricks(ref List<Brick> bricks) {
@@ -298,7 +300,7 @@ class StartGameWindow {
     public int cursorIndex { get; set; }
     public ConsoleColor cursorColor { get; set; }
     public ConsoleColor gameNameTextColor { get; set; }
-    public string choseMapName { get; }
+    public string choseMapName { get; set; }
     public bool isGameStarted { get; set; }
  
     int windowWidth;
@@ -311,7 +313,7 @@ class StartGameWindow {
         cursorIndex = 0;
         cursorColor = ConsoleColor.Red;
         gameNameTextColor = ConsoleColor.Blue;
-        choseMapName = "classic.map";
+        choseMapName = GameSettings.mapName;
         isGameStarted = false;
  
         windowWidth = 120;
@@ -324,12 +326,6 @@ class StartGameWindow {
 
         startText = "█▀ ▀█▀ ▄▀█ █▀█ ▀█▀\n"
                   + "▄█ ░█░ █▀█ █▀▄ ░█░";
-        
-        chooseMapText = "█▀▀ █░█ █▀█ █▀█ █▀ █▀▀  █▀▄▀█ ▄▀█ █▀█\n"
-                      + "█▄▄ █▀█ █▄█ █▄█ ▄█ ██▄  █░▀░█ █▀█ █▀▀";
-        chooseMapText += '\n' + addSpaceAround(
-            string.Join("", choseMapName.Split('.')[..^1]), chooseMapText.Split('\n')[0].Length
-        );
     }
  
     public void show() {
@@ -342,6 +338,13 @@ class StartGameWindow {
             windowWidth / 3 - 5, 
             windowHeight / 2 + windowHeight / 4, 
             Math.Abs(cursorIndex) % 2 == 0
+        );
+
+        chooseMapText = "█▀▀ █░█ █▀█ █▀█ █▀ █▀▀  █▀▄▀█ ▄▀█ █▀█\n"
+                      + "█▄▄ █▀█ █▄█ █▄█ ▄█ ██▄  █░▀░█ █▀█ █▀▀";
+        chooseMapText += '\n' + addSpaceAround(
+            string.Join("", choseMapName.Split('.')[..^1]), 
+            chooseMapText.Split('\n')[0].Length
         );
 
         showText(
@@ -443,11 +446,16 @@ class StartGameWindow {
                 case ConsoleKey.Escape:
                     run = false;
                     break;
+                case ConsoleKey.Enter:
+                    GameSettings.mapName = chooseMapWindow.choseMapName;
+                    choseMapName = chooseMapWindow.choseMapName;
+                    run = false;
+                    break;
                 case ConsoleKey.UpArrow:
-                    chooseMapWindow.cursorIndex -= 1;
+                    chooseMapWindow.cursorDown();
                     break;
                 case ConsoleKey.DownArrow:
-                    chooseMapWindow.cursorIndex += 1;
+                    chooseMapWindow.cursorUp();
                     break;
             }
             if (!run) break;
@@ -488,7 +496,7 @@ class ChooseMapWindow {
         cursorColor = ConsoleColor.Red;
         mapList = new List<string>();
         fillMapList();
-        choseMapName = mapList[Math.Abs(cursorIndex) % mapList.Count];
+        choseMapName = GameSettings.mapName;
         isWindowClosed = false;
 
         windowWidth = 120;
@@ -506,6 +514,17 @@ class ChooseMapWindow {
             chooseMapText.Split('\n').Length, 
             false
         );
+
+        int yCoord = chooseMapText.Split('\n').Length + 2;
+        foreach(string mapName in mapList) {
+            showText(
+                mapName,
+                3 + mapName.Length / 2,
+                yCoord,
+                mapName == choseMapName
+            );
+            yCoord += 3;
+        }
     }
 
     void fillMapList() {
@@ -514,6 +533,19 @@ class ChooseMapWindow {
                 mapList.Add(file.Split("/")[^1]);
             }
         }
+    }
+
+    public void cursorDown () {
+        cursorIndex--;
+        choseMapName = mapList[
+            Math.Abs(cursorIndex) % mapList.Count()
+        ];
+    }
+    public void cursorUp () {
+        cursorIndex++;
+        choseMapName = mapList[
+            Math.Abs(cursorIndex) % mapList.Count()
+        ];
     }
 
     void showText(string text, int x, int y, bool cursorOn) {
