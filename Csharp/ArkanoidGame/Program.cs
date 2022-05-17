@@ -11,7 +11,7 @@ struct GameSettings {
                       bricksCount = 16 * 10,
                       brickWidth = 3,
                       barWidth = 10;
-    static public string mapName = "classic.map";
+    static public string mapName = "smile.map";
 }
  
  
@@ -586,12 +586,12 @@ class ChooseMapWindow {
         using (StreamReader file = new StreamReader($"maps/{choseMapName}")) {
             string[] text = file.ReadToEnd().Split('\n');
             if (text.Length == 1) return;
-            
+
             int lineCount = 0;
             foreach(string line in text) {
                 showText(
                     line, 
-                    windowWidth / 2, 
+                    windowWidth / 2 - (lineCount == text.Length - 1 ? 1 : 0), 
                     windowHeight / 2 - text.Length / 2 + lineCount
                 );
                 lineCount++;
