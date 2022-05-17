@@ -31,10 +31,10 @@ class Program {
         while (!startGameWindow.isGameStarted) {
             if (Console.KeyAvailable) switch (Console.ReadKey().Key) {
                 case ConsoleKey.LeftArrow:
-                    startGameWindow.cursorIndex -= 1;
+                    startGameWindow.cursorIndex--;
                     break;
                 case ConsoleKey.RightArrow:
-                    startGameWindow.cursorIndex += 1;
+                    startGameWindow.cursorIndex++;
                     break;
                 case ConsoleKey.Enter:
                     startGameWindow.clickCurrentButton();
@@ -326,6 +326,7 @@ class StartGameWindow {
 
         startText = "█▀ ▀█▀ ▄▀█ █▀█ ▀█▀\n"
                   + "▄█ ░█░ █▀█ █▀▄ ░█░";
+        chooseMapText = "";
     }
  
     public void show() {
@@ -537,15 +538,13 @@ class ChooseMapWindow {
 
     public void cursorDown () {
         cursorIndex--;
-        choseMapName = mapList[
-            Math.Abs(cursorIndex) % mapList.Count()
-        ];
+        if (cursorIndex < 0) cursorIndex = mapList.Count() - 1;
+        choseMapName = mapList[cursorIndex];
     }
     public void cursorUp () {
         cursorIndex++;
-        choseMapName = mapList[
-            Math.Abs(cursorIndex) % mapList.Count()
-        ];
+        if (cursorIndex >= mapList.Count()) cursorIndex = 0;
+        choseMapName = mapList[cursorIndex];
     }
 
     void showText(string text, int x, int y, bool cursorOn) {
