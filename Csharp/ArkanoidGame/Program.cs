@@ -331,13 +331,14 @@ class StartGameWindow {
  
     public void show() {
         Console.ForegroundColor = gameNameTextColor;
-        showText(gameNameText, windowWidth / 2, windowHeight / 2 - 1, false);
+        showText(gameNameText, windowWidth / 2, windowHeight / 2 - 1);
         Console.ResetColor();
 
         showText(
             startText, 
             windowWidth / 3 - 5, 
             windowHeight / 2 + windowHeight / 4, 
+            true,
             Math.Abs(cursorIndex) % 2 == 0
         );
 
@@ -352,18 +353,22 @@ class StartGameWindow {
             chooseMapText,
             windowWidth * 2 / 3,
             windowHeight / 2 + windowHeight / 4,
+            true,
             Math.Abs(cursorIndex) % 2 == 1
         );
     }
 
-    void showText(string text, int x, int y, bool cursorOn) {
+    void showText(string text, int x, int y, bool mayBeCursor=false, bool cursorOn=false) {
+        // MayBeCursor - параметр, нужный для того, чтобы знать, может ли элемент быть под курсором
+        // Нужно это для того, чтобы знать, окружать ли элемент пробелами или нет (очистка от курсора)
+
         // Верхняя обводка
         if (cursorOn) {
             Console.ForegroundColor = cursorColor;
  
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
-                y - text.Split('\n').Length / 2 - 1
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0)
             );
             Console.Write(
                 "+"
@@ -372,26 +377,31 @@ class StartGameWindow {
             );
  
             Console.ResetColor();
-        } else {
+        } else if (mayBeCursor) {
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
-                y - text.Split('\n').Length / 2 - 1
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0)
             );
-            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+            Console.Write(
+                string.Join(
+                    "", 
+                    Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)
+                )
+            );
         }
 
         // Контент (текст)
         int k = 1;
         foreach (string part in text.Split('\n')) {
             Console.SetCursorPosition(
-                x - part.Split('\n')[0].Length / 2 - 1,
-                y - text.Split('\n').Length / 2 - 1 + k
+                x - part.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0),
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0) + k
             );
             if (cursorOn) { 
                 Console.ForegroundColor = cursorColor;
                 Console.Write("|");
                 Console.ResetColor();
-            } else Console.Write(" ");
+            } else if (mayBeCursor) Console.Write(" ");
  
             Console.Write(part);
  
@@ -399,7 +409,7 @@ class StartGameWindow {
                 Console.ForegroundColor = cursorColor;
                 Console.Write("|");
                 Console.ResetColor();
-            } else Console.Write(" ");
+            } else if (mayBeCursor) Console.Write(" ");
             k++;
         }
 
@@ -408,7 +418,7 @@ class StartGameWindow {
             Console.ForegroundColor = cursorColor;
  
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
                 y - text.Split('\n').Length / 2 + text.Split('\n').Length
             );
             Console.Write(
@@ -418,12 +428,17 @@ class StartGameWindow {
             );
  
             Console.ResetColor();
-        } else {
+        } else if (mayBeCursor) {
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
                 y - text.Split('\n').Length / 2 + text.Split('\n').Length
             );
-            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+            Console.Write(
+                string.Join(
+                    "", 
+                    Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)
+                )
+            );
         }
     }
 
@@ -512,20 +527,22 @@ class ChooseMapWindow {
         showText(
             chooseMapText, 
             windowWidth / 2,
-            chooseMapText.Split('\n').Length, 
-            false
+            chooseMapText.Split('\n').Length
         );
 
         int yCoord = chooseMapText.Split('\n').Length + 2;
         foreach(string mapName in mapList) {
             showText(
-                mapName,
+                string.Join("", mapName.Split('.')[..^1]), 
                 3 + mapName.Length / 2,
                 yCoord,
+                true,
                 mapName == choseMapName
             );
             yCoord += 3;
         }
+
+        showCurrentMap();
     }
 
     void fillMapList() {
@@ -536,25 +553,63 @@ class ChooseMapWindow {
         }
     }
 
-    public void cursorDown () {
+    public void cursorDown() {
         cursorIndex--;
         if (cursorIndex < 0) cursorIndex = mapList.Count() - 1;
         choseMapName = mapList[cursorIndex];
+
+        // Очистка от прошло карты
+        for (int i = 0; i < 20; i++) {
+            showText(
+                string.Join("", Enumerable.Repeat(" ", 20)), 
+                windowWidth / 2, 
+                windowHeight / 2 - 10 + i
+            );
+        }
     }
-    public void cursorUp () {
+    public void cursorUp() {
         cursorIndex++;
         if (cursorIndex >= mapList.Count()) cursorIndex = 0;
         choseMapName = mapList[cursorIndex];
+
+        // Очистка от прошлой карты
+        for (int i = 0; i < 20; i++) {
+            showText(
+                string.Join("", Enumerable.Repeat(" ", 20)), 
+                windowWidth / 2, 
+                windowHeight / 2 - 10 + i
+            );
+        }
     }
 
-    void showText(string text, int x, int y, bool cursorOn) {
+    void showCurrentMap() {
+        using (StreamReader file = new StreamReader($"maps/{choseMapName}")) {
+            string[] text = file.ReadToEnd().Split('\n');
+            if (text.Length == 1) return;
+            
+            int lineCount = 0;
+            foreach(string line in text) {
+                showText(
+                    line, 
+                    windowWidth / 2, 
+                    windowHeight / 2 - text.Length / 2 + lineCount
+                );
+                lineCount++;
+            }
+        }
+    }
+
+    void showText(string text, int x, int y, bool mayBeCursor=false, bool cursorOn=false) {
+        // MayBeCursor - параметр, нужный для того, чтобы знать, может ли элемент быть под курсором
+        // Нужно это для того, чтобы знать, окружать ли элемент пробелами или нет (очистка от курсора)
+
         // Верхняя обводка
         if (cursorOn) {
             Console.ForegroundColor = cursorColor;
  
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
-                y - text.Split('\n').Length / 2 - 1
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0)
             );
             Console.Write(
                 "+"
@@ -563,26 +618,31 @@ class ChooseMapWindow {
             );
  
             Console.ResetColor();
-        } else {
+        } else if (mayBeCursor) {
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
-                y - text.Split('\n').Length / 2 - 1
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0)
             );
-            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+            Console.Write(
+                string.Join(
+                    "", 
+                    Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)
+                )
+            );
         }
 
         // Контент (текст)
         int k = 1;
         foreach (string part in text.Split('\n')) {
             Console.SetCursorPosition(
-                x - part.Split('\n')[0].Length / 2 - 1,
-                y - text.Split('\n').Length / 2 - 1 + k
+                x - part.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0),
+                y - text.Split('\n').Length / 2 - (mayBeCursor ? 1 : 0) + k
             );
             if (cursorOn) { 
                 Console.ForegroundColor = cursorColor;
                 Console.Write("|");
                 Console.ResetColor();
-            } else Console.Write(" ");
+            } else if (mayBeCursor) Console.Write(" ");
  
             Console.Write(part);
  
@@ -590,7 +650,7 @@ class ChooseMapWindow {
                 Console.ForegroundColor = cursorColor;
                 Console.Write("|");
                 Console.ResetColor();
-            } else Console.Write(" ");
+            } else if (mayBeCursor) Console.Write(" ");
             k++;
         }
 
@@ -599,7 +659,7 @@ class ChooseMapWindow {
             Console.ForegroundColor = cursorColor;
  
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
                 y - text.Split('\n').Length / 2 + text.Split('\n').Length
             );
             Console.Write(
@@ -609,12 +669,17 @@ class ChooseMapWindow {
             );
  
             Console.ResetColor();
-        } else {
+        } else if (mayBeCursor) {
             Console.SetCursorPosition(
-                x - text.Split('\n')[0].Length / 2 - 1, 
+                x - text.Split('\n')[0].Length / 2 - (mayBeCursor ? 1 : 0), 
                 y - text.Split('\n').Length / 2 + text.Split('\n').Length
             );
-            Console.Write(string.Join("", Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)));
+            Console.Write(
+                string.Join(
+                    "", 
+                    Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)
+                )
+            );
         }
     }
 }
