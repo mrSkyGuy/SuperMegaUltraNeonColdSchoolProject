@@ -8,14 +8,28 @@ struct GameSettings {
     static public int consoleHeight = 35,
                       consoleWidth = 70, 
                       fps = 10,
-                      bricksCount = 16 * 10,
-                      brickWidth = 3,
-                      barWidth = 10;
+                      brickSize = 1,
+                      barWidth = 10,
+                      marginBottom = 15,
+                      marginLeft = 2;
     static public string mapName = "smile.map";
+
+    static public Dictionary<char, Func<Dictionary<string, object>, object>> sprites 
+        = new Dictionary<char, Func<Dictionary<string, object>, object>>() {
+            {
+                '=', (Dictionary<string, dynamic> kwargs) => {
+                    if (kwargs.Keys.Contains("color")) 
+                        return new Brick(kwargs["x"], kwargs["y"], kwargs["color"]);
+                    return new Brick(kwargs["x"], kwargs["y"]);
+                }
+            }
+    };
 }
  
  
 class Program {
+    static public List<dynamic> items = new List<dynamic>();
+
     static public void Main(string[] args) {
         Console.CursorVisible = false;
  
@@ -48,6 +62,8 @@ class Program {
     }
  
     static void runGame() {
+        renderMap();
+
         Console.SetWindowSize(GameSettings.consoleWidth, GameSettings.consoleHeight);
         Console.Clear();
  
@@ -55,15 +71,13 @@ class Program {
         bool pause = false;
         Ball ball = new Ball(
             new Random().Next(
-                GameSettings.consoleWidth / 2 - 15, 
-                GameSettings.consoleWidth / 2 + 15
+                GameSettings.consoleWidth / 2 - GameSettings.consoleWidth / 4, 
+                GameSettings.consoleWidth / 2 + GameSettings.consoleWidth / 4
             ), 
-            GameSettings.consoleHeight / 1.7
+            GameSettings.consoleHeight - (GameSettings.marginBottom - 1)
         );
         Bar bar = new Bar();
-        List<Brick> bricks = new List<Brick>() {};
-        generateBricks(ref bricks);
- 
+
         while (run) {
             if (Console.KeyAvailable) switch (Console.ReadKey().Key) {
                 case ConsoleKey.LeftArrow:
@@ -84,12 +98,12 @@ class Program {
  
             bar.show();
             ball.move();
-            ball.checkColideWithBar(bar);
+            ball.checkCollideWithBar(bar);
  
-            foreach (Brick brick in bricks) { 
-                brick.show();
-                if (brick.checkCollideWithBall(ball)) {
-                    bricks.Remove(brick);
+            foreach (var item in items) { 
+                item.show();
+                if (item.checkCollideWithBall(ball)) {
+                    items.Remove(item);
                     break;
                 }
             } 
@@ -97,18 +111,34 @@ class Program {
             System.Threading.Thread.Sleep(1000 / GameSettings.fps);
  
             if (!ball.isAlive) run = false;
-            if (bricks.Count == 0) run = false;
+            if (items.Count == 0) run = false;
         }
     }
- 
-    static void generateBricks(ref List<Brick> bricks) {
-        int x = 2, y = 2;
-        for (int i = 0; i < GameSettings.bricksCount; i++) {
-            bricks.Add(new Brick(x, y));
-            x += GameSettings.brickWidth + 1;
-            if (x >= GameSettings.consoleWidth - GameSettings.brickWidth - 1) {
-                x = 2;
-                y += 2;
+
+    static void renderMap() {
+        // Генерация выбранной карты (GameSettings.mapName)
+
+        using (StreamReader mapFile = new StreamReader($"maps/{GameSettings.mapName}")) {
+            string[] map = mapFile.ReadToEnd().Split('\n');
+
+            int height = map.Length * GameSettings.brickSize;
+            int width = map.Select(item => item.Length).Max() * GameSettings.brickSize;
+            GameSettings.consoleWidth = width + GameSettings.marginLeft * 2;
+            GameSettings.consoleHeight = height + GameSettings.marginBottom;
+
+            int y = 1;
+            foreach (string line in map) {
+                int x = GameSettings.marginLeft + 1;
+                foreach (char symb in line) {
+                    if (GameSettings.sprites.Keys.Contains(symb)) {
+                        var item = GameSettings.sprites[symb](
+                            new Dictionary<string, dynamic>{ {"x", x}, {"y", y} }
+                        );
+                        items.Add(item);
+                    }
+                    x += GameSettings.brickSize;
+                }
+                y += GameSettings.brickSize;
             }
         }
     }
@@ -171,8 +201,10 @@ class Ball {
         symb = ' ';
     }
  
-    public void checkColideWithBar(Bar bar) {
-        if (bar.coordsX.Contains(this.coordX) && bar.coordY - 1 == this.coordY) speedY *= -1;
+    public void checkCollideWithBar(Bar bar) {
+        if (bar.coordsX.Contains(this.coordX) && bar.coordY - 1 == this.coordY) {
+            speedY *= -1;
+        }
     }
 }
  
@@ -190,7 +222,7 @@ class Bar {
         width = GameSettings.barWidth;
         coordX = GameSettings.consoleWidth / 2 - width / 2;
         coordY = GameSettings.consoleHeight - 2;
-        coordsX = new int[width];
+        coordsX = new int[width + 2];
         speedX = 2;
  
         updateCoordsX();
@@ -211,7 +243,7 @@ class Bar {
     public void moveLeft() {
         hide();
         coordX -= speedX;
-        if (coordX <= 1) coordX = 2; 
+        if (coordX < 0) coordX = 0; 
         updateCoordsX();
     }
  
@@ -223,54 +255,55 @@ class Bar {
     }
  
     void updateCoordsX() {
-        coordsX = new int[width];
-        for (int i = 0; i < width; i++) coordsX[i] = coordX + i;
+        coordsX = new int[width + 2];
+        for (int i = 0; i < width + 2; i++) coordsX[i] = coordX + i;
     } 
 }
  
  
 class Brick {
-    public int width;
+    public int size;
     public int coordX { get; set; }
-    public int[] coordsX { get; set; }
     public int coordY { get; set; } 
+    public int[] coordsX { get; set; }
+    public int[] coordsY { get; set; }
     public ConsoleColor color;
  
     char symb;
  
     public Brick(int x, int y, ConsoleColor color = ConsoleColor.Blue) {
+        size = GameSettings.brickSize;
         coordX = x;
         coordY = y;
-        coordsX = new int[width];
+        coordsX = new int[size];
+        coordsY = new int[size];
         this.color = color;
-        width = GameSettings.brickWidth;
  
         symb = '■';
  
-        updateCoordsX();
+        updateCoordsXY();
     }
  
     public void show() {
         Console.ForegroundColor = color;
-        Console.SetCursorPosition(coordX, coordY);
-        for (int i = 0; i < width; i++) Console.Write(symb);
+        for (int y = 0; y < size; y++) {
+            Console.SetCursorPosition(coordX, coordY + y);
+            for (int x = 0; x < size; x++) {
+                Console.Write(symb);
+            }
+        }
         Console.ResetColor();
     }
  
-    public void hide() {
-        Console.SetCursorPosition(coordX, coordY);
-        for (int i = 0; i < width; i++) Console.Write(' ');
-    }
- 
     public void remove() {
-        hide();
         symb = ' ';
+        show();
     }
  
     public bool checkCollideWithBall(Ball ball) {
         if (  // Снизу и сверху
-            (coordsX.Contains(ball.coordX) && coordY - 1 == ball.coordY) ||
-            (coordsX.Contains(ball.coordX) && coordY + 1 == ball.coordY)
+            (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY + 1)) ||
+            (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY - 1))
         ) {
             remove();
             ball.speedY *= -1;
@@ -278,20 +311,34 @@ class Brick {
         }
  
         if (  // Слева и справа
-            (coordsX.Contains(ball.coordX + 1) && coordY == ball.coordY) ||
-            (coordsX.Contains(ball.coordX - 1) && coordY == ball.coordY)
+            (coordsX.Contains(ball.coordX + 1) && coordsY.Contains(ball.coordY)) ||
+            (coordsX.Contains(ball.coordX - 1) && coordsY.Contains(ball.coordY))
         ) {
             remove();
             ball.speedX *= -1;
+            return true;
+        }
+
+        if ( "Доработай тут, не работает" // По углам (Доработать!!) 
+            (coordsX[0] - 1 == ball.coordX && coordsY[^1] + 1 == ball.coordY) || // левый нижний
+            (coordsX[^1] + 1 == ball.coordX && coordsY[^1] + 1 == ball.coordY) || // правый нижний
+            (coordsX[0] - 1 == ball.coordX && coordsY[0] - 1 == ball.coordY) || // левый верхний
+            (coordsX[^1] + 1 == ball.coordX && coordsY[0] - 1 == ball.coordY) // правый верхний
+        ) {
+            remove();
+            ball.speedY *= -1; 
             return true;
         }
  
         return false;
     }
  
-    void updateCoordsX() {
-        coordsX = new int[width];
-        for (int i = 0; i < width; i++) coordsX[i] = coordX + i;
+    void updateCoordsXY() {
+        coordsX = new int[size];
+        for (int i = 0; i < size; i++) coordsX[i] = coordX + i;
+
+        coordsY = new int[size];
+        for (int i = 0; i < size; i++) coordsY[i] = coordY + i;
     } 
 }
  
@@ -558,26 +605,25 @@ class ChooseMapWindow {
         if (cursorIndex < 0) cursorIndex = mapList.Count() - 1;
         choseMapName = mapList[cursorIndex];
 
-        // Очистка от прошло карты
-        for (int i = 0; i < 20; i++) {
-            showText(
-                string.Join("", Enumerable.Repeat(" ", 20)), 
-                windowWidth / 2, 
-                windowHeight / 2 - 10 + i
-            );
-        }
+        clearMap();
     }
+
     public void cursorUp() {
         cursorIndex++;
         if (cursorIndex >= mapList.Count()) cursorIndex = 0;
         choseMapName = mapList[cursorIndex];
 
+        clearMap();
+    }
+
+    void clearMap() {
         // Очистка от прошлой карты
-        for (int i = 0; i < 20; i++) {
+        int size = 30;
+        for (int i = 0; i < size; i++) {
             showText(
-                string.Join("", Enumerable.Repeat(" ", 20)), 
+                string.Join("", Enumerable.Repeat(" ", size)), 
                 windowWidth / 2, 
-                windowHeight / 2 - 10 + i
+                windowHeight / 2 - size / 2 + i
             );
         }
     }
