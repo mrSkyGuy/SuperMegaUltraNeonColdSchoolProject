@@ -99,14 +99,25 @@ class Program {
             bar.show();
             ball.move();
             ball.checkCollideWithBar(bar);
- 
+
+            bool wasCollide = false;
             foreach (var item in items) { 
                 item.show();
                 if (item.checkCollideWithBall(ball)) {
+                    wasCollide = true;
                     items.Remove(item);
                     break;
                 }
             } 
+            // Проверка на соприкосновение по диагонали, после того, как проверили 4 стороны (цикл выше) 
+            if (!wasCollide) {
+                foreach (var item in items) {
+                    if (item.checkCollideWithBall(ball, true)) {
+                        items.Remove(item);
+                        break;
+                    }
+                }
+            }
  
             System.Threading.Thread.Sleep(1000 / GameSettings.fps);
  
@@ -300,36 +311,49 @@ class Brick {
         show();
     }
  
-    public bool checkCollideWithBall(Ball ball) {
+    public bool checkCollideWithBall(Ball ball, bool corners = false) {
+        // StreamWriter log = new StreamWriter("log.txt", true);
+        if (corners) {
+            if ( // По углам
+                (coordsX[0] == ball.coordX + 1 && coordsY[^1] == ball.coordY - 1) || // левый нижний
+                (coordsX[^1] == ball.coordX - 1 && coordsY[^1] == ball.coordY - 1) || // правый нижний
+                (coordsX[0] == ball.coordX + 1 && coordsY[0] == ball.coordY + 1) || // левый верхний
+                (coordsX[^1] == ball.coordX - 1 && coordsY[0] == ball.coordY + 1) // правый верхний
+            ) {
+                remove();
+                ball.speedY *= -1; 
+                // log.WriteLine("Ударился по диагонали");
+                // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
+                // log.Close();
+                return true;
+            }
+
+            return false;
+        }
+
         if (  // Снизу и сверху
             (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY + 1)) ||
-            (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY - 1))
+            (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY - 1)) ||
+            (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY))
         ) {
             remove();
             ball.speedY *= -1;
+            // log.WriteLine("Ударился сверху или снизу");
+            // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
+            // log.Close();
             return true;
-        }
- 
-        if (  // Слева и справа
+        } else  if (  // Слева и справа
             (coordsX.Contains(ball.coordX + 1) && coordsY.Contains(ball.coordY)) ||
             (coordsX.Contains(ball.coordX - 1) && coordsY.Contains(ball.coordY))
         ) {
             remove();
             ball.speedX *= -1;
+            // log.WriteLine("Ударился слева или справа");
+            // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
+            // log.Close();
             return true;
         }
-
-        if ( "Доработай тут, не работает" // По углам (Доработать!!) 
-            (coordsX[0] - 1 == ball.coordX && coordsY[^1] + 1 == ball.coordY) || // левый нижний
-            (coordsX[^1] + 1 == ball.coordX && coordsY[^1] + 1 == ball.coordY) || // правый нижний
-            (coordsX[0] - 1 == ball.coordX && coordsY[0] - 1 == ball.coordY) || // левый верхний
-            (coordsX[^1] + 1 == ball.coordX && coordsY[0] - 1 == ball.coordY) // правый верхний
-        ) {
-            remove();
-            ball.speedY *= -1; 
-            return true;
-        }
- 
+        // log.Close();
         return false;
     }
  
@@ -555,11 +579,11 @@ class ChooseMapWindow {
     string chooseMapText;
 
     public ChooseMapWindow() {
-        cursorIndex = 0;
         cursorColor = ConsoleColor.Red;
         mapList = new List<string>();
         fillMapList();
         choseMapName = GameSettings.mapName;
+        cursorIndex = mapList.IndexOf(choseMapName);
         isWindowClosed = false;
 
         windowWidth = 120;
@@ -598,6 +622,7 @@ class ChooseMapWindow {
                 mapList.Add(file.Split("/")[^1]);
             }
         }
+        mapList.Reverse();
     }
 
     public void cursorDown() {
