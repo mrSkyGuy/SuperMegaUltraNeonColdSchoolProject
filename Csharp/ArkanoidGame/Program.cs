@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Diagnostics;
-using System.Collections.Generic;
+﻿// using System;
+// using System.Linq;
+// using System.Diagnostics;
+// using System.Collections.Generic;
  
 // cd C:\Users\nurma\myLife-xD\SuperMegaUltraNeonColdSchoolProject\Csharp\ArkanoidGame\ && dotnet run
 struct GameSettings {
@@ -29,13 +29,14 @@ struct GameSettings {
  
 class Program {
     static public List<dynamic> items = new List<dynamic>();
+    static public bool isLost;
 
     static public void Main(string[] args) {
         Console.CursorVisible = false;
  
         showStartGameWindow();
         runGame();
-        endGame();
+        endGame(isLost);
     }
  
     static void showStartGameWindow() {
@@ -88,6 +89,7 @@ class Program {
                     break;
                 case ConsoleKey.Escape:
                     run = false;
+                    isLost = true;
                     break;
                 case ConsoleKey.Spacebar:
                     pause = !pause;
@@ -112,7 +114,7 @@ class Program {
             // Проверка на соприкосновение по диагонали, после того, как проверили 4 стороны (цикл выше) 
             if (!wasCollide) {
                 foreach (var item in items) {
-                    if (item.checkCollideWithBall(ball, true)) {
+                    if (item.checkCollideCornersWithBall(ball)) {
                         items.Remove(item);
                         break;
                     }
@@ -121,8 +123,14 @@ class Program {
  
             System.Threading.Thread.Sleep(1000 / GameSettings.fps);
  
-            if (!ball.isAlive) run = false;
-            if (items.Count == 0) run = false;
+            if (!ball.isAlive) {
+                run = false;
+                isLost = true;
+            }
+            if (items.Count == 0) {
+                run = false; 
+                isLost = false;
+            }
         }
     }
 
@@ -154,10 +162,9 @@ class Program {
         }
     }
  
-    static void endGame() {
-        Console.Clear();
-        Console.SetCursorPosition(1, 1);
-        Console.WriteLine("The end");
+    static void endGame(bool lose=false) {
+        EndGame endGame = new EndGame(lose:lose);
+        endGame.show();
     }
 }
  
@@ -311,26 +318,7 @@ class Brick {
         show();
     }
  
-    public bool checkCollideWithBall(Ball ball, bool corners = false) {
-        // StreamWriter log = new StreamWriter("log.txt", true);
-        if (corners) {
-            if ( // По углам
-                (coordsX[0] == ball.coordX + 1 && coordsY[^1] == ball.coordY - 1) || // левый нижний
-                (coordsX[^1] == ball.coordX - 1 && coordsY[^1] == ball.coordY - 1) || // правый нижний
-                (coordsX[0] == ball.coordX + 1 && coordsY[0] == ball.coordY + 1) || // левый верхний
-                (coordsX[^1] == ball.coordX - 1 && coordsY[0] == ball.coordY + 1) // правый верхний
-            ) {
-                remove();
-                ball.speedY *= -1; 
-                // log.WriteLine("Ударился по диагонали");
-                // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
-                // log.Close();
-                return true;
-            }
-
-            return false;
-        }
-
+    public bool checkCollideWithBall(Ball ball) {
         if (  // Снизу и сверху
             (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY + 1)) ||
             (coordsX.Contains(ball.coordX) && coordsY.Contains(ball.coordY - 1)) ||
@@ -338,9 +326,6 @@ class Brick {
         ) {
             remove();
             ball.speedY *= -1;
-            // log.WriteLine("Ударился сверху или снизу");
-            // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
-            // log.Close();
             return true;
         } else  if (  // Слева и справа
             (coordsX.Contains(ball.coordX + 1) && coordsY.Contains(ball.coordY)) ||
@@ -348,12 +333,24 @@ class Brick {
         ) {
             remove();
             ball.speedX *= -1;
-            // log.WriteLine("Ударился слева или справа");
-            // log.WriteLine($"X: [{string.Join(", ", coordsX)}] {ball.coordX} \nY: [{string.Join(", ", coordsY)}] {ball.coordY}\n");
-            // log.Close();
             return true;
         }
-        // log.Close();
+        return false;
+    }
+
+    public bool checkCollideCornersWithBall(Ball ball) {
+        if ( // По углам
+            (coordsX[0] == ball.coordX + 1 && coordsY[^1] == ball.coordY - 1) || // левый нижний
+            (coordsX[^1] == ball.coordX - 1 && coordsY[^1] == ball.coordY - 1) || // правый нижний
+            (coordsX[0] == ball.coordX + 1 && coordsY[0] == ball.coordY + 1) || // левый верхний
+            (coordsX[^1] == ball.coordX - 1 && coordsY[0] == ball.coordY + 1) // правый верхний
+        ) {
+            remove();
+            ball.speedX *= -1;
+            ball.speedY *= -1;
+            return true;
+        }
+
         return false;
     }
  
@@ -751,6 +748,56 @@ class ChooseMapWindow {
                     Enumerable.Repeat(" ", text.Split('\n')[0].Length + 2)
                 )
             );
+        }
+    }
+}
+
+
+class EndGame {
+    string endGameText;
+    string resultText;
+    int windowWidth;
+    int windowHeight;
+
+    public EndGame(bool lose=false) {
+        endGameText = "████████╗██╗░░██╗███████╗  ███████╗███╗░░██╗██████╗░\n"
+                    + "╚══██╔══╝██║░░██║██╔════╝  ██╔════╝████╗░██║██╔══██╗\n"
+                    + "░░░██║░░░███████║█████╗░░  █████╗░░██╔██╗██║██║░░██║\n"
+                    + "░░░██║░░░██╔══██║██╔══╝░░  ██╔══╝░░██║╚████║██║░░██║\n"
+                    + "░░░██║░░░██║░░██║███████╗  ███████╗██║░╚███║██████╔╝\n"
+                    + "░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ╚══════╝╚═╝░░╚══╝╚═════╝░";
+        if (lose)
+            resultText = "█▄─█─▄█─▄▄─█▄─██─▄███▄─▄███─▄▄─█─▄▄▄▄█▄─▄▄─█▄─▄▄▀█\n"
+                       + "██▄─▄██─██─██─██─█████─██▀█─██─█▄▄▄▄─██─▄█▀██─██─█\n"
+                       + "▀▀▄▄▄▀▀▄▄▄▄▀▀▄▄▄▄▀▀▀▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▀▀";
+        else 
+            resultText = "█▄─█─▄█─▄▄─█▄─██─▄███▄─█▀▀▀█─▄█─▄▄─█▄─▀█▄─▄█\n"
+                       + "██▄─▄██─██─██─██─█████─█─█─█─██─██─██─█▄▀─██\n"
+                       + "▀▀▄▄▄▀▀▄▄▄▄▀▀▄▄▄▄▀▀▀▀▀▄▄▄▀▄▄▄▀▀▄▄▄▄▀▄▄▄▀▀▄▄▀";
+        
+        windowWidth = 80;
+        windowHeight = 20;
+    }
+
+    public void show() {
+        Console.Clear();
+        Console.SetWindowSize(windowWidth, windowHeight);
+
+        showText(endGameText, windowWidth / 2, windowHeight / 2 - 3);
+        showText(resultText, windowWidth / 2, windowHeight / 2 + 2);
+        Console.WriteLine();
+    }
+
+    void showText(string text, int x, int y) {
+        // Контент (текст)
+        int k = 1;
+        foreach (string part in text.Split('\n')) {
+            Console.SetCursorPosition(
+                x - part.Split('\n')[0].Length / 2,
+                y - text.Split('\n').Length / 2 + k
+            );
+            Console.Write(part);
+            k++;
         }
     }
 }
